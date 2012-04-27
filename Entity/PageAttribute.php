@@ -36,15 +36,16 @@ class PageAttribute
     private $value;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Page
      *
-     * @ORM\ManyToMany(targetEntity="Room13\PageBundle\Entity\Page", mappedBy="attributes")
+    /**
+     * @ORM\ManyToOne(targetEntity="Room13\PageBundle\Entity\Page", inversedBy="attributes", cascade={"persist","merge"})
+
      */
-    private $pages;
+    private $page;
 
     function __construct()
     {
-        $this->pages = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
@@ -99,29 +100,19 @@ class PageAttribute
     }
 
     /**
-     * @param \Doctrine\Common\Collections\ArrayCollection $pages
+     * @param \Room13\PageBundle\Entity\Page $page
      */
-    public function setPages($pages)
+    public function setPage($page)
     {
-        $this->pages = $pages;
+        $this->page = $page;
     }
 
     /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return \Room13\PageBundle\Entity\Page
      */
-    public function getPages()
+    public function getPage()
     {
-        return $this->pages;
-    }
-
-    public function addPage(Page $page)
-    {
-        $this->pages[]=$page;
-    }
-
-    public function removePage(Page $page)
-    {
-        $this->pages->remove($page);
+        return $this->page;
     }
 
 

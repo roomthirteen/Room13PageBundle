@@ -45,27 +45,8 @@ class Page
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(
-     *      targetEntity="Room13\PageBundle\Entity\PageAttribute",
-     *      inversedBy="pages",
-     *      cascade={"persist","merge","detatch"}
-     * )
-     * @ORM\JoinTable(
-     *      name="balkanride_page_attributes",
-     *      joinColumns={
-     *          @ORM\JoinColumn(
-     *              name="page_id",
-     *              referencedColumnName="id"
-     *          )
-     *      },
-     *      inverseJoinColumns={
-     *          @ORM\JoinColumn(
-     *              name="page_attribute_id",
-     *              referencedColumnName="id"
-     *          )
-     *      }
-     * )
+    /**
+
      */
     protected $attributes;
 
@@ -123,6 +104,22 @@ class Page
     protected $children;
 
 
+
+    /**
+     * @var \DateTime $created
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     */
+    protected $created;
+
+    /**
+     * @var \DateTime  $updated
+     *
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
+     */
+    protected $updated;
 
 
     public function __construct()
@@ -303,6 +300,38 @@ class Page
     public function setPath($path)
     {
         $this->path = $path;
+    }
+
+    /**
+     * @param \DateTime $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param \DateTime $updated
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
     }
 
 
