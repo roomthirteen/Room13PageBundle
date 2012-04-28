@@ -1,42 +1,43 @@
 <?php
 
-namespace Room13\PageBundle\Twig;
+namespace Room13\PageBundle\Templating\Helper;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\Container;
 
 use Room13\PageBundle\Entity\Page;
-use Room13\PageBundle\Entity\ContentPage;
-use Room13\PageBundle\Entity\AliasPage;
 use Room13\PageBundle\Entity\NullPage;
+use Room13\PageBundle\Entity\AliasPage;
+use Room13\PageBundle\Entity\ContentPage;
 
-class PageExtension extends \Twig_Extension
+use Balkanride\MainBundle\Entity\User;
+
+class PageHelper
 {
-
-    /**
-     * @var EntityManager
-     */
-    private $em;
-
     /**
      * @var Container
      */
     private $container;
 
     /**
-     * @var \Room13\PageBundle\Entity\Page
+     * @var Page
      */
     private $currentPage;
 
+    /**
+     * @var array Array to store id generator sequence for different namespaces
+     */
     private $identifierCount = array();
 
-
-    public function __construct(EntityManager $em,Container $container)
+    function __construct(Container $container)
     {
-        $this->currentPage = false;
-        $this->em = $em;
         $this->container = $container;
+        $this->currentPage = false;
+    }
+
+    public function getPageRepository()
+    {
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        return $em->getRepository('Room13PageBundle:Page');
     }
 
     public function setCurrentPage(Page $page)
@@ -44,7 +45,7 @@ class PageExtension extends \Twig_Extension
         $this->currentPage = $page;
     }
 
-    private function getCurrentPage()
+    public function getCurrentPage()
     {
         if($this->currentPage!==false && $this->currentPage !== null)
         {
@@ -56,7 +57,7 @@ class PageExtension extends \Twig_Extension
 
         if($this->currentPage===false)
         {
-            $this->currentPage = $this->em->getRepository('Room13PageBundle:Page')->findOneByPath($path);
+            $this->currentPage = $this->getPageRepository()->findOneByPath($path);
         }
 
         if($this->currentPage === null)
@@ -69,53 +70,50 @@ class PageExtension extends \Twig_Extension
 
     }
 
-    public function getGlobals()
-    {
-        return array(
-            'current_page'=>$this->getCurrentPage()
-        );
-    }
-
     public function pageContent(Page $page)
     {
-        if($page->getProcessContent())
+        $content =  $page->getContent();
+
+        if(!$content)
         {
-            $layout = $page->getAttribute('layout');
-            $data   = unserialize($page->getContent());
+            return '';
+        }
 
-            if($layout===null)
+        if($page->hasFeature('layout'))
+        {
+            if(!is_array($content))
             {
                 throw new \InvalidArgumentException(sprintf(
-                    'Page "%s" is set to have it\'s content processed but does not have a layout',
+                    'Page with id "%s" has a layout but no array content',
                     $page->getId()
                 ));
             }
 
-            if(!is_array($data))
-            {
-                throw new \InvalidArgumentException(sprintf(
-                    'Page "%s" is set to have it\'s content processed but content is not a serialized array',
-                    $page->getId()
-                ));
-            }
+            $layoutFeature  = $page->getFeature('layout');
+            $layout         = $layoutFeature->getContent();
+            $search         = array();
+            $replace        = array();
 
-            $search     = array();
-            $replace    = array();
-
-            foreach($data as $key=>$value)
+            foreach($content as $key=>$value)
             {
                 $search[]   ='{{'.$key.'}}';
                 $replace[]  =$value;
             }
 
-            $layout = str_replace($search,$replace,$layout);
+            $content = str_replace($search,$replace,$layout);
 
-            return $layout;
+
         }
-        else
+
+
+        if(is_array($content))
         {
-            return $page->getContent();
+            $content = implode('',$content);
         }
+
+
+        return $content;
+
     }
 
     public function debugPage(Page $page)
@@ -177,16 +175,5 @@ class PageExtension extends \Twig_Extension
     }
 
 
-    public function getFilters()
-    {
-        return array(
-            'page_debug'    => new \Twig_Filter_Method($this,'debugPage',array('is_safe'=>array('html'))),
-            'page_content'  => new \Twig_Filter_Method($this,'pageContent',array('is_safe'=>array('html'))),
-        );
-    }
 
-    public function getName()
-    {
-        return 'balkanride_page';
-    }
 }

@@ -5,11 +5,17 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="room13_page.twig.page_extension" class="Room13\PageBundle\Twig\PageExtension">
-            <tag name="twig.extension" />
-            <argument type="service" id="doctrine.orm.entity_manager" />
+
+        <service id="room13_page.templating.helper.page" class="Room13\PageBundle\Templating\Helper\PageHelper">
+            <tag name="templating.helper" alias="room13_page" />
             <argument type="service" id="service_container" />
         </service>
+
+        <service id="room13_page.templating.twig.page" class="Room13\PageBundle\Templating\Twig\PageExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="room13_page.templating.helper.page" />
+        </service>
+
     </services>
 
 </container>
