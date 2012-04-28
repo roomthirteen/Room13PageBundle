@@ -43,7 +43,7 @@ class PageRepository extends EntityRepository
             ->select('p')
             //->from('Room13PageBundle:Page','p')
             ->where($qb->expr()->andX(
-                $qb->expr()->eq('p.slug','?1'),
+                $qb->expr()->eq('p.path','?1'),
                 $qb->expr()->eq('p.tree_level','?2')
             ))
         ;
@@ -51,6 +51,7 @@ class PageRepository extends EntityRepository
         $pathInfo = $this->parsePath($path);
         $page     = null;
         $level    = 0;
+
 
         do
         {

@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use JMS\DiExtraBundle\Annotation as DI;
+ use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PageController extends Controller
 {
@@ -22,6 +24,54 @@ class PageController extends Controller
      * @DI\Inject("request")
      */
     private $request;
+
+    /**
+     * @Route("/page/translation/{pageId}", requirements={"pageId" = "\d+"})
+     */
+    public function getTranslations($pageId)
+    {
+
+
+        $page = $this->em->getRepository('Room13PageBundle:Page')->find($pageId);
+
+        if($page==null)
+        {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Page '.$pageId);
+        }
+
+        $translations = $this->em->getRepository('Gedmo\Translatable\Entity\Translation')->findTranslations($page);
+
+        foreach($translations as $translation)
+        {
+
+        }
+
+        $response = new Response(json_encode($translations),200,array(
+            'Content-Type'  => 'application/json'
+        ));
+
+        return $response;
+    }
+
+    /**
+    * @Route("/page/by-path")
+    * @Template("BalkanrideFrontendBundle::page.html.twig")
+    */
+    public function pageByPathAction()
+    {
+        $path = $this->getRequest()->get('path','');
+        $page = $this->em->getRepository('Room13PageBundle:Page')->findOneByPath('/'.$path);
+
+        // set the page to the frontend twig extension so the lookup
+        // will not be executed two times
+        // TODO: bad dependenciy, think of another way to do this
+        $twigExtension = $this->container->get('room13_page.templating.helper.page');
+        $twigExtension->setCurrentPage($page);
+
+        return array(
+            'page'=>$page,
+        );
+    }
 
     /**
      * @Route("/page/{id}")
@@ -61,12 +111,10 @@ class PageController extends Controller
         // set the page to the frontend twig extension so the lookup
         // will not be executed two times
         // TODO: bad dependenciy, think of another way to do this
-        $twigExtension = $this->container->get('room13_page.twig.page_extension');
+        $twigExtension = $this->container->get('room13_page.templating.helper.page');
         $twigExtension->setCurrentPage($page);
 
         return array('page' => $page);
     }
-
-
 
 }
