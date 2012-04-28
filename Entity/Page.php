@@ -38,7 +38,7 @@ class Page
     /**
      * @var string $path
      *
-     * @ORM\Column(name="path", type="string", length=255)
+     * @ORM\Column(name="path", type="string", length=255, nullable=true)
      */
     protected $path;
 
@@ -51,19 +51,23 @@ class Page
     protected $attributes;
 
     /**
+     * Owning Side
+     *
+     * @ORM\ManyToMany(targetEntity="Room13\PageBundle\Entity\PageFeature")
+     * @ORM\JoinTable(name="room13_page_feature_mapping",
+     *      joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="feature_id", referencedColumnName="id")}
+     *      )
+     */
+    private $features;
+
+
+    /**
      * @var string
 
      */
     protected $type;
 
-    /**
-     * @var string $slug
-     *
-     * @Gedmo\Slug(fields={"path"})
-     * @ORM\Column(name="slug", type="string", length=255)
-     * @Gedmo\TreePathSource
-     */
-    protected $slug;
 
     /**
      * @Gedmo\TreeRoot
@@ -93,7 +97,7 @@ class Page
      * @var Page
      * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="Page", inversedBy="children", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id",onDelete="SET NULL")
      */
     protected $parent;
 
@@ -125,11 +129,27 @@ class Page
     public function __construct()
     {
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->features   = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function __toString()
     {
         return $this->getPath();
+    }
+
+
+    public function getFullPath()
+    {
+        $curr = $this;
+        $path = '';
+
+        while ($curr!==null)
+        {
+            $path = '/'.$curr->getId().$path;
+            $curr = $curr->getParent();
+        }
+
+        return $path;
     }
 
     public function getPath()
@@ -140,6 +160,11 @@ class Page
     public function setChildren($children)
     {
         $this->children = $children;
+    }
+
+    public function addChild(Page $child)
+    {
+        $this->children[] = $child;
     }
 
     public function getChildren()
@@ -204,21 +229,6 @@ class Page
         return $this->parent;
     }
 
-    /**
-     * @param string $slug
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
 
     /**
      * @param string $title
@@ -332,6 +342,45 @@ class Page
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    public function addFeature(PageFeature $feature)
+    {
+        $this->features[]=$feature;
+    }
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function hasFeature($type)
+    {
+        foreach($this->features as $feature)
+        {
+            if($feature->getType()===$type)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+   /**
+    * @param $type string feature type
+    * @return PageFeature|null
+    */
+    public function getFeature($type)
+    {
+        foreach($this->features as $feature)
+        {
+            if($feature->getType()===$type)
+            {
+                return $feature;
+            }
+        }
+
+        return null;
     }
 
 

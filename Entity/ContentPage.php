@@ -14,7 +14,7 @@ class ContentPage extends Page
     /**
      * @var string $title
      *
-     * @ORM\Column(name="page_itle", type="string", length=255, nullable = true)
+     * @ORM\Column(name="page_title", type="string", length=255, nullable = true)
      * @Gedmo\Translatable
      */
     private $pageTitle;
@@ -38,17 +38,11 @@ class ContentPage extends Page
     /**
      * @var text $content
      *
-     * @ORM\Column(name="content", type="text", nullable=true)
+     * @ORM\Column(name="content", type="array", nullable=true)
      * @Gedmo\Translatable
      */
     private $content;
 
-    /**
-     * @var boolean wether to process the page contents
-     *
-     * @ORM\Column(name="process_content",type="boolean",nullable=false)
-     */
-    private $processContent;
 
     /**
      * @var array
@@ -58,7 +52,12 @@ class ContentPage extends Page
 
     public function __construct()
     {
-        $this->processContent = false;
+        $this->content = array();
+    }
+
+    public function __toString()
+    {
+        return "wee";
     }
 
 
@@ -140,22 +139,6 @@ class ContentPage extends Page
     public function getPageTitle()
     {
         return $this->pageTitle;
-    }
-
-    /**
-     * @param boolean $processContent
-     */
-    public function setProcessContent($processContent)
-    {
-        $this->processContent = $processContent;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getProcessContent()
-    {
-        return $this->processContent;
     }
 
     public function getAttribute($name,$default=null)

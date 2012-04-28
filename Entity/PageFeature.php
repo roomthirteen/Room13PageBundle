@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Room13\PageBundle\Entity\PageFeature
  *
- * @ORM\Table()
+ * @ORM\Table(name="room13_page_feature")
  * @ORM\Entity
  */
 class PageFeature
@@ -21,10 +21,18 @@ class PageFeature
      */
     private $id;
 
+
+    /**
+     * @var string $key
+     *
+     * @ORM\Column(name="descriptor", type="string", length=255)
+     */
+    private $descriptor;
+
     /**
      * @var string $title
      *
-     * @ORM\Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255, nullable=true)
      */
     private $title;
 
@@ -38,9 +46,22 @@ class PageFeature
     /**
      * @var text $content
      *
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(name="content", type="text", nullable=true)
      */
     private $content;
+
+
+    /**
+     * @var \Symfony\Component\Validator\Constraints\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Page", mappedBy="features", cascade={"PERSIST"})
+     */
+    private $pages;
+
+    function __construct()
+    {
+        $this->pages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
 
     /**
@@ -111,5 +132,26 @@ class PageFeature
     public function getContent()
     {
         return $this->content;
+    }
+
+    public function addPage(Page $page)
+    {
+        $this->pages[]=$page;
+    }
+
+    /**
+     * @param string $descriptor
+     */
+    public function setDescriptor($descriptor)
+    {
+        $this->descriptor = $descriptor;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescriptor()
+    {
+        return $this->descriptor;
     }
 }
