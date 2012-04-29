@@ -43,6 +43,7 @@ class Page
     protected $path;
 
 
+
     /**
      * @var \Doctrine\Common\Collections\Collection
     /**
@@ -107,6 +108,11 @@ class Page
      */
     protected $children;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Url", mappedBy="page", cascade={"persist", "remove"})
+     */
+    protected $urls;
+
 
 
     /**
@@ -130,6 +136,7 @@ class Page
     {
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->features   = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->urls       = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function __toString()
@@ -143,11 +150,12 @@ class Page
         $curr = $this;
         $path = '';
 
-        while ($curr!==null)
+        do
         {
-            $path = '/'.$curr->getId().$path;
-            $curr = $curr->getParent();
+            $path = '/'.$curr->path.$path;
+            $curr = $curr->parent;
         }
+        while ($curr!==null);
 
         return $path;
     }
@@ -172,6 +180,25 @@ class Page
         return $this->children;
     }
 
+    public function hasChildren()
+    {
+        return $this->children!=null && count($this->children) > 0;
+    }
+
+    public function setUrls($urls)
+    {
+        $this->urls = $urls;
+    }
+
+    public function addUrl(Url $url)
+    {
+        $this->urls[] = $url;
+    }
+
+    public function getUrls()
+    {
+        return $this->urls;
+    }
     /**
      * @param int $id
      */

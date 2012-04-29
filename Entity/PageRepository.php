@@ -12,8 +12,9 @@ class PageRepository extends EntityRepository
     {
         $path = strtolower($path);
 
-        $path = array_filter(explode('/',$path),function($e){
-            return strlen(trim($e))>0;
+        $path = array_filter(explode('/', $path), function($e)
+        {
+            return strlen(trim($e)) > 0;
         });
 
         $path = array_reverse($path);
@@ -23,64 +24,28 @@ class PageRepository extends EntityRepository
     }
 
 
-    public function findOneByPath($path){
-
-        /**
-         * @var \Doctrine\ORM\QueryBuilder
-         */
-        $qb  = $this->createQueryBuilder('p');
-
+    public function findOneByPath($path)
+    {
         $path = trim($path);
 
         if($path==='/')
         {
-            // TODO: find a configurable solution, di not available here
             $path = '/home';
         }
 
-
-        $qb
-            ->select('p')
-            //->from('Room13PageBundle:Page','p')
-            ->where($qb->expr()->andX(
-                $qb->expr()->eq('p.path','?1'),
-                $qb->expr()->eq('p.tree_level','?2')
-            ))
-        ;
-
-        $pathInfo = $this->parsePath($path);
-        $page     = null;
-        $level    = 0;
-
-
-        do
+        if(strrpos($path,'/')===strlen($path)-1)
         {
-            $pathElem = array_pop($pathInfo);
+            $path = substr($path,0,strrpos($path,'/'));
+        }
 
-            $qb
-                ->setParameter(1,$pathElem)
-                ->setParameter(2,$level)
-                ->getQuery();
+        $url = $this->getEntityManager()->getRepository('Room13PageBundle:Url')->findOneByUrl($path);
 
-            $page = $qb->getQuery()->getOneOrNullResult();
+        if ($url)
+        {
+            return $url->getPage();
+        }
 
-            if($page===null)
-            {
-                // a page in the path has not been found, so stop looking
-                break;
-            }
-
-            if($page instanceof AliasPage)
-            {
-            //    echo "\nderefferencing alias\n";
-            //    $page = $page->getReferencedPage();
-            }
-
-            $level++;
-
-        } while(count($pathInfo)>0);
-
-        return $page;
+        return null;
 
     }
 }
