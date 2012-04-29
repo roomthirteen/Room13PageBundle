@@ -35,12 +35,17 @@ class PageExtension extends \Twig_Extension
     {
         return $this->helper->pageContent($page);
     }
+    public function findPage($path)
+    {
+        return $this->helper->findPage($path);
+    }
 
     public function getFilters()
     {
         return array(
             'page_debug'    => new \Twig_Filter_Method($this,'filterPageDebug',array('is_safe'=>array('html'))),
             'page_content'  => new \Twig_Filter_Method($this,'filterPageContent',array('is_safe'=>array('html'))),
+            'page_find'  => new \Twig_Filter_Method($this,'findPage'),
         );
     }
 

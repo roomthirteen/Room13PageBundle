@@ -70,6 +70,11 @@ class PageHelper
 
     }
 
+    public function findPage($path)
+    {
+        return $this->getPageRepository()->findOneByPath($path);
+    }
+
     public function pageContent(Page $page)
     {
         $content =  $page->getContent();
