@@ -105,7 +105,9 @@ class PageHelper
                 $replace[]  =$value;
             }
 
-            $content = str_replace($search,$replace,$layout);
+            $content = preg_replace_callback('/[{]{2}([^}]*)[}]{2}/i',function($key) use ($content) {
+                return isset($content[$key[1]]) ? $content[$key[1]] : '<!-- NO-CONTENT -->';
+            },$layout);
 
 
         }
