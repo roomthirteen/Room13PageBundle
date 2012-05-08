@@ -6,8 +6,6 @@ use Symfony\Component\DependencyInjection\Container;
 
 use Room13\PageBundle\Entity\Page;
 use Room13\PageBundle\Entity\NullPage;
-use Room13\PageBundle\Entity\AliasPage;
-use Room13\PageBundle\Entity\ContentPage;
 
 use Balkanride\MainBundle\Entity\User;
 
@@ -131,28 +129,11 @@ class PageHelper
         $attribs['Type']=get_class($page);
         $attribs['Path']=$page->getPath();
 
-        if($page instanceof ContentPage)
-        {
-            $attribs['Id']=$page->getId();
-            $attribs['Title']=$page->getTitle();
-            $attribs['Pagetitle']=$page->getPageTitle();
-            $attribs['Pagesubtitle']=$page->getPageSubtitle();
-        }
-        elseif($page instanceof AliasPage)
-        {
-            $alias = $page->getReferencedPage();
 
-            $attribs['Id']=$page->getId();
-            $attribs['Title']=$page->getTitle();
-            $attribs['Aliased Page']='
-            <table style="margin-left: 20px; border-left: solid 5px lightgrey;">
-                <tr><td><strong>Id</strong></td><td>&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp; '.$alias->getId().'</td></tr>
-                <tr><td><strong>Title</strong></td><td>&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp; '.$alias->getTitle().'</td></tr>
-                <tr><td><strong>Pagetitle</strong></td><td>&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp; '.$alias->getPageTitle().'</td></tr>
-                <tr><td><strong>Pagesubtitle</strong></td><td>&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp; '.$alias->getPageSubtitle().'</td></tr>
-            </table>
-            ';
-        }
+        $attribs['Id']=$page->getId();
+        $attribs['Title']=$page->getTitle();
+        $attribs['Pagetitle']=$page->getPageTitle();
+        $attribs['Pagesubtitle']=$page->getPageSubtitle();
 
         $content = '';
 
