@@ -2,7 +2,7 @@
 
 namespace Room13\PageBundle\Entity;
 
-class NullPage extends ContentPage
+class NullPage extends Page
 {
 
     public function __construct($path)

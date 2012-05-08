@@ -52,9 +52,8 @@ class PageFeature
 
 
     /**
-     * @var \Symfony\Component\Validator\Constraints\Collection
      *
-     * @ORM\ManyToMany(targetEntity="Page", mappedBy="features", cascade={"PERSIST"})
+     * @ORM\ManyToMany(targetEntity="Room13\PageBundle\Entity\Page", mappedBy="features", cascade={"ALL"})
      */
     private $pages;
 
@@ -67,7 +66,7 @@ class PageFeature
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -87,7 +86,7 @@ class PageFeature
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -107,7 +106,7 @@ class PageFeature
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -127,7 +126,7 @@ class PageFeature
     /**
      * Get content
      *
-     * @return text 
+     * @return text
      */
     public function getContent()
     {
@@ -136,7 +135,7 @@ class PageFeature
 
     public function addPage(Page $page)
     {
-        $this->pages[]=$page;
+        $this->pages[] = $page;
     }
 
     /**

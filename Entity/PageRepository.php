@@ -28,14 +28,14 @@ class PageRepository extends EntityRepository
     {
         $path = trim($path);
 
-        if($path==='/')
-        {
-            $path = '/home';
-        }
-
         if(strrpos($path,'/')===strlen($path)-1)
         {
-            $path = substr($path,0,strrpos($path,'/'));
+            $path = trim(substr($path,0,strrpos($path,'/')));
+        }
+
+        if(strlen($path)===0)
+        {
+            $path = '/';
         }
 
         $url = $this->getEntityManager()->getRepository('Room13PageBundle:Url')->findOneByUrl($path);

@@ -11,9 +11,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Entity(repositoryClass="Room13\PageBundle\Entity\PageRepository")
  * @ORM\Table(name="room13_page")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"content" = "ContentPage", "alias" = "AliasPage"})
  * @Gedmo\Tree(type="nested")
  */
 class Page
@@ -51,24 +48,48 @@ class Page
      */
     protected $attributes;
 
+
     /**
-     * Owning Side
      *
-     * @ORM\ManyToMany(targetEntity="Room13\PageBundle\Entity\PageFeature")
+     * @ORM\ManyToMany(targetEntity="Room13\PageBundle\Entity\PageFeature", inversedBy="pages")
      * @ORM\JoinTable(name="room13_page_feature_mapping",
-     *      joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="feature_id", referencedColumnName="id")}
-     *      )
+     *   joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="feature_id", referencedColumnName="id")}
+     * )
      */
     private $features;
 
+    /**
+     * @var string $title
+     *
+     * @ORM\Column(name="page_title", type="string", length=255, nullable = true)
+     * @Gedmo\Translatable
+     */
+    private $pageTitle;
 
     /**
-     * @var string
-
+     * @var string $pageSubTitle
+     *
+     * @ORM\Column(name="page_subtitle", type="string", length=255, nullable=true)
+     * @Gedmo\Translatable
      */
-    protected $type;
+    private $pageSubTitle;
 
+    /**
+     * @var string $navigationTitle;
+     *
+     * @ORM\Column(name="navigation_title", type="string", length=255, nullable=true)
+     * @Gedmo\Translatable
+     */
+    private $navigationTitle;
+
+    /**
+     * @var text $content
+     *
+     * @ORM\Column(name="content", type="array", nullable=true)
+     * @Gedmo\Translatable
+     */
+    private $content;
 
     /**
      * @Gedmo\TreeRoot
@@ -137,11 +158,91 @@ class Page
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->features   = new \Doctrine\Common\Collections\ArrayCollection();
         $this->urls       = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->content    = array();
     }
 
     public function __toString()
     {
-        return $this->getPath();
+        return $this->getTitle();
+    }
+
+
+
+    /**
+     * @param \text $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @return \text
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $navigationTitle
+     */
+    public function setNavigationTitle($navigationTitle)
+    {
+        $this->navigationTitle = $navigationTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNavigationTitle()
+    {
+        return $this->navigationTitle;
+    }
+
+    /**
+     * @param string $pageSubTitle
+     */
+    public function setPageSubTitle($pageSubTitle)
+    {
+        $this->pageSubTitle = $pageSubTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPageSubTitle()
+    {
+        return $this->pageSubTitle;
+    }
+
+    /**
+     * @param string $pageTitle
+     */
+    public function setPageTitle($pageTitle)
+    {
+        $this->pageTitle = $pageTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPageTitle()
+    {
+        return $this->pageTitle;
+    }
+
+    public function getAttribute($name,$default=null)
+    {
+        foreach($this->attributes as $attribute)
+        {
+            if($attribute->getName()===$name)
+            {
+                return $attribute->getValue();
+            }
+        }
+
+        return $default;
     }
 
 
@@ -175,6 +276,9 @@ class Page
         $this->children[] = $child;
     }
 
+    /**
+     * @return Page[]
+     */
     public function getChildren()
     {
         return $this->children;
@@ -193,6 +297,11 @@ class Page
     public function addUrl(Url $url)
     {
         $this->urls[] = $url;
+    }
+
+    public function getMainUrl()
+    {
+        return $this->urls[0]->getUrl();
     }
 
     public function getUrls()
@@ -311,24 +420,6 @@ class Page
     public function getTreeRoot()
     {
         return $this->tree_root;
-    }
-
-    public function getType()
-    {
-        if($this instanceof ContentPage)
-        {
-            return 'content';
-        }
-        elseif($this instanceof AliasPage)
-        {
-            return 'alias';
-        }
-        elseif($this instanceof NullPage)
-        {
-            return 'null';
-        }
-
-        throw new \Exception("Unsupported type class ".get_class($this));
     }
 
     /**
