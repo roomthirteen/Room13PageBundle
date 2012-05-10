@@ -23,8 +23,13 @@ class Room13PageExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('admin.xml');
-        $loader->load('templating.xml');
-        $loader->load('menu.xml');
+
+        foreach(array('admin','menu','templating','twig') as $feature)
+        {
+            if($config[$feature])
+            {
+                $loader->load($feature.'.xml');
+            }
+        }
     }
 }

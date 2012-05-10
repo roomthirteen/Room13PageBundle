@@ -20,6 +20,16 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('room13_page');
 
+        $rootNode
+            ->children()
+                ->booleanNode('admin')->cannotBeEmpty()->defaultFalse()->end()
+                ->booleanNode('menu')->cannotBeEmpty()->defaultTrue()->end()
+                ->booleanNode('templating')->cannotBeEmpty()->defaultTrue()->end()
+                ->booleanNode('twig')->cannotBeEmpty()->defaultTrue()->end()
+            ->end()
+        ;
+
+
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
