@@ -26,6 +26,13 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('menu')->cannotBeEmpty()->defaultTrue()->end()
                 ->booleanNode('templating')->cannotBeEmpty()->defaultTrue()->end()
                 ->booleanNode('twig')->cannotBeEmpty()->defaultTrue()->end()
+                ->arrayNode('templates')
+                    ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('page_full')->defaultValue('Room13PageBundle:Page:full.html.twig')->cannotBeEmpty()->end()
+                            ->scalarNode('page_ajax')->defaultValue('Room13PageBundle:Page:ajax.html.twig')->cannotBeEmpty()->end()
+                        ->end()
+                ->end()
             ->end()
         ;
 

@@ -31,5 +31,10 @@ class Room13PageExtension extends Extension
                 $loader->load($feature.'.xml');
             }
         }
+
+        foreach($config['templates'] as $tplName=>$tplFile)
+        {
+            $container->setParameter('room13.page.template.'.$tplName,$tplFile);
+        }
     }
 }
