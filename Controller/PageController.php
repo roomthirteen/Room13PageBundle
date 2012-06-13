@@ -50,36 +50,26 @@ class PageController extends Controller
             'Content-Type'  => 'application/json'
         ));
 
+
         return $response;
     }
 
     /**
     * @Route("/page/by-path")
-    * @Template("BalkanrideFrontendBundle::page.html.twig")
     */
     public function pageByPathAction()
     {
         $path = $this->getRequest()->get('path','');
         $page = $this->em->getRepository('Room13PageBundle:Page')->findOneByPath('/'.$path);
 
-        // set the page to the frontend twig extension so the lookup
-        // will not be executed two times
-        // TODO: bad dependenciy, think of another way to do this
-        $twigExtension = $this->container->get('room13_page.templating.helper.page');
-        $twigExtension->setCurrentPage($page);
-
-        return array(
-            'page'=>$page,
-        );
+        return $this->processPage($page);
     }
 
     /**
      * @Route("/page/{id}")
-     * @Template("BalkanrideFrontendBundle::page.html.twig")
      */
     public function pageAction($id=null)
     {
-
         if($id===null)
         {
             $id = $this->getRequest()->getPathInfo();
@@ -108,13 +98,25 @@ class PageController extends Controller
             );
         }
 
+        return $this->processPage($page);
+
+    }
+
+
+    private function processPage($page)
+    {
         // set the page to the frontend twig extension so the lookup
         // will not be executed two times
         // TODO: bad dependenciy, think of another way to do this
         $twigExtension = $this->container->get('room13_page.templating.helper.page');
         $twigExtension->setCurrentPage($page);
 
-        return array('page' => $page);
+
+        $tpl = $this->getRequest()->isXmlHttpRequest() ? $this->container->getParameter('room13.page.template.page_ajax') : $this->container->getParameter('room13.page.template.page_full');
+
+        return $this->render($tpl, array(
+            'page' => $page
+        ));
     }
 
 }

@@ -1,0 +1,15 @@
+{# minimalistic page template, go ahead and create your own #}
+
+{% extends '::layout_ajax.html.twig' %}
+
+{% block body %}
+<h1>
+    {% spaceless %}
+    {{current_page.pageTitle}}
+    {% if current_page.pageSubtitle %}<small>{{current_page.pageSubtitle}}</small>{% endif %}
+    {% endspaceless %}
+</h1>
+<p>
+    {{current_page|page_content}}
+</p>
+{% endblock %}
