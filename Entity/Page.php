@@ -40,11 +40,8 @@ class Page
     protected $path;
 
 
-
     /**
      * @var \Doctrine\Common\Collections\Collection
-    /**
-
      */
     protected $attributes;
 
