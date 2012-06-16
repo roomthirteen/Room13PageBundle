@@ -17,7 +17,7 @@ class PageRepository extends EntityRepository
             return strlen(trim($e)) > 0;
         });
 
-        $path = array_reverse($path);
+        //$path = array_reverse($path);
 
         return $path;
 
@@ -38,7 +38,42 @@ class PageRepository extends EntityRepository
             $path = '/';
         }
 
-        $url = $this->getEntityManager()->getRepository('Room13PageBundle:Url')->findOneByUrl($path);
+        $url = $this->getEntityManager()->getRepository('Room13PageBundle:Url')->findOneBy(array(
+            'url'=>$path,
+            'wildcard'=>false
+        ));
+
+
+        if(!$url)
+        {
+            // no page found yet, so try finding a wildcard page
+
+            $parsedPath     = $this->parsePath($path);
+            $wildcardPaths  = array();
+
+            do
+            {
+                $wildcardPaths[] = '/'.implode('/',$parsedPath);
+                array_pop($parsedPath);
+
+            } while(count($parsedPath)>0);
+
+            // no exact match found, try finding a wildcard page
+            $q = $this->getEntityManager()->createQuery('
+                SELECT u
+                FROM Room13PageBundle:Url u
+                WHERE u.wildcard = :wildcard
+                AND u.url IN (:paths)
+                ORDER BY u.url DESC
+            ');
+
+            $q->setParameter('wildcard',true);
+            $q->setParameter('paths',$wildcardPaths);
+            $q->setMaxResults(1);
+
+            $url = $q->getOneOrNullResult();
+
+        }
 
         if ($url)
         {

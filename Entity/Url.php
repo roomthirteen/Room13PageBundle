@@ -19,25 +19,37 @@ class Url
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $url
      *
      * @ORM\Column(name="url", type="string", length=255)
      */
-    private $url;
+    protected $url;
+
+
+
+    /**
+     * @var boolean $wildcard
+     *
+     * @ORM\Column(name="wildcard", type="boolean", nullable=false)
+     */
+    protected $wildcard;
+
 
     /**
      * @var Page
      *
      * @ORM\ManyToOne(targetEntity="Room13\PageBundle\Entity\Page",inversedBy="urls", cascade={"persist","merge"})
      */
-    private $page;
+    protected $page;
 
     public function __construct($page=null)
     {
         $this->page = $page;
+        $this->url = null;
+        $this->wildcard = false;
 
         if($page!=null)
         {
@@ -93,5 +105,21 @@ class Url
     public function getPage()
     {
         return $this->page;
+    }
+
+    /**
+     * @param boolean $wildcard
+     */
+    public function setWildcard($wildcard)
+    {
+        $this->wildcard = $wildcard;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getWildcard()
+    {
+        return $this->wildcard;
     }
 }
