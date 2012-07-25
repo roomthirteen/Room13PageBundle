@@ -36,6 +36,8 @@ class Page
      * @var string $path
      *
      * @ORM\Column(name="path", type="string", length=255, nullable=true)
+     * TODO: this should be renamed to pathComponent or pathName because its only one component of the main url path
+     *       maybe even better to remove it completely in favor uf the URL class of name it slug?
      */
     protected $path;
 
@@ -260,7 +262,7 @@ class Page
 
     public function getPath()
     {
-        $this->path;
+        return $this->path;
     }
 
     public function setChildren($children)
