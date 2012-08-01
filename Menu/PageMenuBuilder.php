@@ -57,7 +57,7 @@ class PageMenuBuilder
 
         $menu = $this
             ->factory->createItem('root')
-            ->setCurrentUri($request->getPathInfo())
+            ->setUri($request->getPathInfo())
         ;
 
         foreach($paths as $path)
