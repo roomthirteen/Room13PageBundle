@@ -26,35 +26,6 @@ class PageController extends Controller
     private $request;
 
     /**
-     * @Route("/page/translation/{pageId}", requirements={"pageId" = "\d+"})
-     */
-    public function getTranslations($pageId)
-    {
-
-
-        $page = $this->em->getRepository('Room13PageBundle:Page')->find($pageId);
-
-        if($page==null)
-        {
-            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('Page '.$pageId);
-        }
-
-        $translations = $this->em->getRepository('Gedmo\Translatable\Entity\Translation')->findTranslations($page);
-
-        foreach($translations as $translation)
-        {
-
-        }
-
-        $response = new Response(json_encode($translations),200,array(
-            'Content-Type'  => 'application/json'
-        ));
-
-
-        return $response;
-    }
-
-    /**
     * @Route("/page/by-path")
     */
     public function pageByPathAction()
