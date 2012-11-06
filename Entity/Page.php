@@ -152,12 +152,17 @@ class Page
     protected $updated;
 
 
-    public function __construct()
+    public function __construct($url = null)
     {
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->features   = new \Doctrine\Common\Collections\ArrayCollection();
         $this->urls       = new \Doctrine\Common\Collections\ArrayCollection();
         $this->content    = array();
+
+        if($url !== null)
+        {
+            $this->addUrl(new Url($url));
+        }
     }
 
     public function __toString()
