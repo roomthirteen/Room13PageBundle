@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Room13\PageBundle\Entity\Page;
 use Knp\Menu\ItemInterface;
 
-use Room13\TwigExtensionsBundle\Exception\InvalidArgumentException;
 
 class PageMenuBuilder
 {
@@ -47,7 +46,7 @@ class PageMenuBuilder
 
         if(!is_array($paths))
         {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'Paths for menu pages invalid. Please specify an array of paths of a single path to build the menu from.'
             );
         }
@@ -66,7 +65,7 @@ class PageMenuBuilder
 
             if($page === null)
             {
-                throw new InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(sprintf(
                     'Menu page with path "%s" not found',
                     $path
                 ));
